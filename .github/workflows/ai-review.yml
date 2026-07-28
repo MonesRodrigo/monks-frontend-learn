@@ -1,0 +1,54 @@
+name: AI Review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'src/**'
+      - '.github/**'
+      - '!**/*.png'
+      - '!**/*.svg'
+
+concurrency:
+  group: ai-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+  models: read    
+
+jobs:
+  review:
+    # Kill switch: skip when the PR carries the `skip-ai` label.
+    if: ${{ !contains(github.event.pull_request.labels.*.name, 'skip-ai') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+
+      - uses: ./.github/actions/setup
+
+      - name: Generate bounded diff
+        id: diff
+        env:
+          # Pass branch-controlled input through env to avoid script injection.
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          set -euo pipefail
+          git diff --unified=3 \
+            "origin/${BASE_REF}...HEAD" \
+            -- 'src/**' '.github/**' \
+            ':(exclude)pnpm-lock.yaml' ':(exclude)*.snap' \
+            | head -c 120000 > diff.patch
+          echo "lines=$(wc -l < diff.patch)" >> "$GITHUB_OUTPUT"
+
+      - name: Run AI review
+        if: steps.diff.outputs.lines != '0'
+        continue-on-error: true
+        run: node scripts/ai-review.mjs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+          MODEL: openai/gpt-4o-mini
