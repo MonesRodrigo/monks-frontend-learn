@@ -1,49 +1,61 @@
-# Starlight Starter Kit: Basics
+# Frontend Learn
 
-[![Built with Starlight](https://astro.badg.es/v2/built-with-starlight/tiny.svg)](https://starlight.astro.build)
+Personal, zero-budget educational site about frontend engineering, built with
+[Astro](https://astro.build) + [Starlight](https://starlight.astro.build). It
+doubles as a **testbed for an AI-powered GitHub Actions suite**.
 
+> Personal learning project. Not affiliated with any employer's internal systems.
+
+## Stack
+
+- **Astro + Starlight** static site, deployed to **GitHub Pages** via GitHub
+  Actions (`actions/deploy-pages`, Source = GitHub Actions).
+- **Node 22** everywhere (`.nvmrc`, `engines`, workflows). **pnpm** as the only
+  package manager (Corepack-pinned via `packageManager`).
+- Content authored as MD/MDX under `src/content/docs/`, validated by a **Zod**
+  schema in `src/content.config.ts` (Astro Content Layer).
+
+> This is a GitHub Pages **project page**, so `astro.config.mjs` sets both
+> `site` and `base: '/monks-frontend-learn'`. All internal links must respect
+> that base path.
+
+## Local development
+
+```bash
+nvm use                       # Node 22 (see .nvmrc)
+corepack enable               # activate the pinned pnpm version
+pnpm install --frozen-lockfile
+
+pnpm dev                      # dev server at http://localhost:4321/monks-frontend-learn/
+pnpm check                    # astro check: TypeScript + content frontmatter (Zod)
+pnpm build                    # production build to ./dist
+pnpm preview                  # serve the built site under the base path
+
+pnpm exec playwright install --with-deps chromium
+pnpm test:a11y                # axe + Playwright accessibility tests
+pnpm lh                       # Lighthouse CI (via pnpm dlx @lhci/cli)
 ```
-pnpm create astro@latest -- --template starlight
-```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## Workflows
 
-## 🚀 Project Structure
+| Workflow | Trigger | What it does |
+| :-- | :-- | :-- |
+| `ci.yml` | PR + push to `main` | `astro check` + build, uploads `dist` artifact. |
+| `deploy.yml` | push to `main` + manual | Builds and deploys to GitHub Pages. |
+| `quality.yml` | PR (code paths) | Lighthouse (3 runs), axe/a11y (SARIF), bundle size. |
+| `ai-review.yml` | PR | LLM review via GitHub Models, posts inline comments. |
 
-Inside of your Astro + Starlight project, you'll see the following folders and files:
+The shared `checkout + pnpm + Node 22 + install` steps live in the composite
+action `.github/actions/setup`.
 
-```
-.
-├── public/
-├── src/
-│   ├── assets/
-│   ├── content/
-│   │   └── docs/
-│   └── content.config.ts
-├── astro.config.mjs
-├── package.json
-└── tsconfig.json
-```
+## Architecture decisions
 
-Starlight looks for `.md` or `.mdx` files in the `src/content/docs/` directory. Each file is exposed as a route based on its file name.
+- **Zero budget.** LLM inference uses **GitHub Models** with the built-in
+  `GITHUB_TOKEN` (`permissions: models: read`) — no external API keys.
+- **Least-privilege permissions** and `concurrency` on every workflow;
+  `cancel-in-progress: false` only for the Pages deploy.
+- **AI review is advisory**: it never blocks a legitimate PR (warns and exits 0
+  on rate limit / 5xx / timeout) and is skippable with the `skip-ai` label.
+- **Fork limitation:** `GITHUB_TOKEN` on PRs from forks is read-only and lacks
+  `models: read`, so `ai-review.yml` only runs for same-repo branches.
 
-Images can be added to `src/assets/` and embedded in Markdown with a relative link.
-
-Static assets, like favicons, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `pnpm install`             | Installs dependencies                            |
-| `pnpm dev`             | Starts local dev server at `localhost:4321`      |
-| `pnpm build`           | Build your production site to `./dist/`          |
-| `pnpm preview`         | Preview your build locally, before deploying     |
-| `pnpm astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `pnpm astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Check out [Starlight’s docs](https://starlight.astro.build/), read [the Astro documentation](https://docs.astro.build), or jump into the [Astro Discord server](https://astro.build/chat).
