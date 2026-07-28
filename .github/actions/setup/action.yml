@@ -1,0 +1,18 @@
+name: Setup
+description: Install pnpm and Node 22, restore dependency cache, install deps
+
+runs:
+  using: composite
+  steps:
+    # pnpm must be installed BEFORE setup-node, otherwise `cache: pnpm` cannot
+    # resolve the pnpm store path. Version is read from package.json#packageManager.
+    - uses: pnpm/action-setup@v4
+
+    - uses: actions/setup-node@v4
+      with:
+        node-version-file: .nvmrc
+        cache: pnpm
+
+    - name: Install dependencies
+      shell: bash
+      run: pnpm install --frozen-lockfile
