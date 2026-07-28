@@ -4,10 +4,11 @@ import starlight from '@astrojs/starlight';
 
 // https://astro.build/config
 export default defineConfig({
+	site: 'https://MonesRodrigo.github.io',
+	base: '/monks-frontend-learn',
 	integrations: [
 		starlight({
-			title: 'My Docs',
-			social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/withastro/starlight' }],
+			title: 'Frontend Learn',
 			sidebar: [
 				{
 					label: 'Guides',
