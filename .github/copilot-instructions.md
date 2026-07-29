@@ -1,7 +1,7 @@
 # Copilot instructions
 
 ## Project
-Astro 5 + Starlight educational site for frontend content. Doubles as a
+Astro 7 + Starlight educational site for frontend content. Doubles as a
 testbed for an AI-powered GitHub Actions suite. Public repo, personal account.
 Deployed to GitHub Pages (project page — `base` path is required).
 Zero-budget: LLM inference via GitHub Models with `GITHUB_TOKEN`.
@@ -46,6 +46,36 @@ Zero-budget: LLM inference via GitHub Models with `GITHUB_TOKEN`.
 - Playwright: install `--with-deps chromium` only.
 - Always upload artifacts on failure for debugging.
 
+## QA workflow (Definition of Done)
+On Node 22, a change is only "done" when all of these pass locally:
+- `pnpm check` — astro check (TypeScript + content frontmatter via Zod).
+- `pnpm build` — production build succeeds.
+- Relevant tests: `pnpm test:a11y` when pages or markup change; `pnpm size`
+  must stay within `BUNDLE_BUDGET_KB`.
+Run these before proposing a change as complete. Never mark work done, or open a
+PR, if CI would go red. Diagnose and fix failures — do not retry blindly.
+
+## Testing rules
+- Adding or changing a page under `src/content/docs/**`: add its URL (with the
+  `/monks-frontend-learn/` base) to `PAGES` in `tests/a11y.spec.ts` and keep the
+  suite green (no `critical`/`serious` axe violations).
+- Fix accessibility problems in the markup. Never weaken the axe tags or the
+  critical/serious threshold, or exclude a page, just to make tests pass.
+- Keep JS+CSS within the bundle budget; justify any budget bump explicitly.
+
+## Branch & PR workflow
+- Never commit or push directly to `main`. Create a feature branch:
+  `feat/…`, `fix/…`, `chore/…`, `ci/…`, `docs/…`.
+- Use Conventional Commits (`feat:`, `fix:`, `ci:`, `docs:`, `chore:`).
+- Keep PRs small and focused on one concern; fill in the PR template.
+- Open a PR and let CI, the quality gates and the AI review run. Do not merge
+  with red checks.
+
 ## Never do
 - Invent action inputs, API endpoints or GitHub Models limits.
   Flag uncertainty as `⚠️ VERIFICAR EN DOCS` instead.
+- Bypass safety checks: no `--no-verify`, no `git push --force`, no
+  `git reset --hard` on shared history, no direct commits to `main`.
+- Add the `skip-ai` label without a stated reason, or disable/weaken a failing
+  check to get green — fix the root cause instead.
+- Edit `.github/hooks/` to get around the enforced guardrails.
