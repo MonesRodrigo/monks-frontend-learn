@@ -2,6 +2,12 @@
 // PreToolUse guard: enforce the QA / branch-PR workflow deterministically.
 // Reads the hook payload from stdin and denies terminal commands that bypass
 // safety checks or write directly to the protected branch. Read-only otherwise.
+//
+// Scope: this is an advisory workflow guardrail, NOT a security sandbox. It is a
+// denylist of known bypass patterns and is intentionally not exhaustive; the
+// real security boundary is VS Code's tool approval and the terminal sandbox.
+// The only execSync call below runs a constant command (no external input), so
+// there is no command-injection surface here.
 
 import { execSync } from 'node:child_process'
 
@@ -52,6 +58,8 @@ const DANGEROUS = [
 		re: /git\s+push\b[^\n]*?(--force\b|--force-with-lease\b|(^|\s)-f(\s|$))/,
 		msg: 'Force-pushing is not allowed on shared history.',
 	},
+	// Force-push via refspec, e.g. `git push origin +main`.
+	{ re: /git\s+push\b[^\n]*\s\+\S/, msg: 'Force-pushing via +refspec is not allowed on shared history.' },
 	{ re: /git\s+reset\s+--hard\b/, msg: 'git reset --hard can destroy work; run it yourself if truly needed.' },
 ]
 
