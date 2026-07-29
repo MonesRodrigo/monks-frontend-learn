@@ -39,7 +39,7 @@ jobs:
           git diff --unified=3 \
             "origin/${BASE_REF}...HEAD" \
             -- 'src/**' '.github/**' \
-            ':(exclude)pnpm-lock.yaml' ':(exclude)*.snap' \
+            ':(exclude)pnpm-lock.yaml' ':(exclude)*.snap' ':(exclude)*.md' \
             | head -c 120000 > diff.patch
           echo "lines=$(wc -l < diff.patch)" >> "$GITHUB_OUTPUT"
 
