@@ -16,6 +16,7 @@ export default defineConfig({
 						// Each item here is one entry in the navigation menu.
 						{ label: 'Example Guide', slug: 'guides/example' },
 						{ label: 'QA & Testing', slug: 'guides/testing' },
+						{ label: 'GitHub Actions CI/CD', slug: 'guides/github-actions-cicd' },
 					],
 				},
 				{
