@@ -9,6 +9,7 @@ export default defineConfig({
 	integrations: [
 		starlight({
 			title: 'Frontend Learn',
+			customCss: ['./src/styles/custom.css'],
 			sidebar: [
 				{
 					label: 'Guides',
