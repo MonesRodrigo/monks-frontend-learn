@@ -1,0 +1,29 @@
+name: Branch policy
+
+# GitHub rulesets cannot restrict a PR's source branch, so this gate does it.
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  source-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Only develop and hotfix/* may target main
+        env:
+          # Branch-controlled input goes through env to avoid script injection.
+          HEAD_REF: ${{ github.head_ref }}
+        run: |
+          set -euo pipefail
+          case "$HEAD_REF" in
+            develop|hotfix/*)
+              echo "Source branch \"$HEAD_REF\" is allowed to target main."
+              ;;
+            *)
+              echo "::error::PRs into main must come from develop or hotfix/*. Got: $HEAD_REF"
+              exit 1
+              ;;
+          esac

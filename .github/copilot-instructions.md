@@ -64,7 +64,10 @@ PR, if CI would go red. Diagnose and fix failures — do not retry blindly.
 - Keep JS+CSS within the bundle budget; justify any budget bump explicitly.
 
 ## Branch & PR workflow
-- Never commit or push directly to `main`. Create a feature branch:
+- `develop` is the default branch and the target for every feature PR.
+  `main` is release-only: it accepts PRs from `develop` or `hotfix/*` and
+  nothing else (enforced by `branch-policy.yml`).
+- Never commit or push directly to `main` or `develop`. Create a feature branch:
   `feat/…`, `fix/…`, `chore/…`, `ci/…`, `docs/…`.
 - Use Conventional Commits (`feat:`, `fix:`, `ci:`, `docs:`, `chore:`).
 - Keep PRs small and focused on one concern; fill in the PR template.
@@ -75,7 +78,7 @@ PR, if CI would go red. Diagnose and fix failures — do not retry blindly.
 - Invent action inputs, API endpoints or GitHub Models limits.
   Flag uncertainty as `⚠️ VERIFICAR EN DOCS` instead.
 - Bypass safety checks: no `--no-verify`, no `git push --force`, no
-  `git reset --hard` on shared history, no direct commits to `main`.
+  `git reset --hard` on shared history, no direct commits to `main`/`develop`.
 - Add the `skip-ai` label without a stated reason, or disable/weaken a failing
   check to get green — fix the root cause instead.
 - Edit `.github/hooks/` to get around the enforced guardrails.
