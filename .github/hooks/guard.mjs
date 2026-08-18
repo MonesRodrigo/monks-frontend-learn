@@ -67,7 +67,9 @@ for (const rule of DANGEROUS) {
 	if (rule.re.test(command)) deny(`${rule.msg} Work on a feature branch and open a PR instead.`)
 }
 
-// Block direct commits/pushes to the protected branch.
+// Block direct commits/pushes to the protected branches.
+const PROTECTED_BRANCHES = ['main', 'master', 'develop']
+
 if (/\bgit\s+(commit|push)\b/.test(command)) {
 	let branch = ''
 	try {
@@ -75,7 +77,7 @@ if (/\bgit\s+(commit|push)\b/.test(command)) {
 	} catch {
 		allow()
 	}
-	if (branch === 'main' || branch === 'master') {
+	if (PROTECTED_BRANCHES.includes(branch)) {
 		const action = /\bgit\s+commit\b/.test(command) ? 'Committing' : 'Pushing'
 		deny(`${action} directly to "${branch}" is not allowed. Create a feature branch and open a PR.`)
 	}

@@ -38,12 +38,16 @@ pnpm lh                       # Lighthouse CI (via pnpm dlx @lhci/cli)
 
 ## Workflows
 
+Feature branches target `develop`; `main` only accepts PRs from `develop` or
+`hotfix/*` and is what gets deployed.
+
 | Workflow | Trigger | What it does |
 | :-- | :-- | :-- |
-| `ci.yml` | PR + push to `main` | `astro check` + build, uploads `dist` artifact. |
+| `ci.yml` | PR + push to `main`/`develop` | `astro check` + build, uploads `dist` artifact. |
 | `deploy.yml` | push to `main` + manual | Builds and deploys to GitHub Pages. |
 | `quality.yml` | PR (code paths) | Lighthouse (3 runs), axe/a11y (SARIF), bundle size. |
 | `ai-review.yml` | PR | LLM review via GitHub Models, posts inline comments. |
+| `branch-policy.yml` | PR into `main` | Rejects PRs whose source is not `develop` or `hotfix/*`. |
 
 The shared `checkout + pnpm + Node 22 + install` steps live in the composite
 action `.github/actions/setup`.

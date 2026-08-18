@@ -19,15 +19,15 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/starlight": "^0.41.6",
-    "astro": "^7.1.6",
+    "@astrojs/starlight": "^0.41.7",
+    "astro": "^7.2.0",
     "sharp": "^0.35.3"
   },
   "devDependencies": {
-    "@actions/core": "^1.11.1",
+    "@actions/core": "^3.0.1",
     "@astrojs/check": "^0.9.10",
     "@axe-core/playwright": "^4.12.1",
-    "@octokit/rest": "^21.1.1",
+    "@octokit/rest": "^22.0.1",
     "@playwright/test": "^1.62.1",
     "pagefind": "^1.5.2",
     "typescript": "^6.0.3"
