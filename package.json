@@ -20,13 +20,13 @@
   },
   "dependencies": {
     "@astrojs/starlight": "^0.41.7",
-    "astro": "^7.2.0",
+    "astro": "^7.2.4",
     "sharp": "^0.35.3"
   },
   "devDependencies": {
     "@actions/core": "^3.0.1",
     "@astrojs/check": "^0.9.10",
-    "@axe-core/playwright": "^4.12.1",
+    "@axe-core/playwright": "^4.13.0",
     "@octokit/rest": "^22.0.1",
     "@playwright/test": "^1.62.1",
     "pagefind": "^1.5.2",
