@@ -1,5 +1,11 @@
 name: Setup
-description: Install pnpm and Node 22, restore dependency cache, install deps
+description: Install pnpm and Node (from .nvmrc), restore the dependency cache and install deps.
+
+inputs:
+  node-version:
+    description: Overrides the Node.js version from `.nvmrc` when set.
+    required: false
+    default: ""
 
 runs:
   using: composite
@@ -10,6 +16,7 @@ runs:
 
     - uses: actions/setup-node@v4
       with:
+        node-version: ${{ inputs.node-version }}
         node-version-file: .nvmrc
         cache: pnpm
 

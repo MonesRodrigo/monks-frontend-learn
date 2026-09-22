@@ -12,6 +12,7 @@ const PAGES = [
 	'/monks-frontend-learn/guides/example/',
 	'/monks-frontend-learn/guides/testing/',
 	'/monks-frontend-learn/guides/github-actions-cicd/',
+	'/monks-frontend-learn/guides/github-actions-aws-oidc/',
 	'/monks-frontend-learn/reference/example/',
 ]
 

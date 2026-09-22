@@ -1,0 +1,51 @@
+name: Build (reusable)
+
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        description: Overrides the Node.js version from `.nvmrc` when set.
+        required: false
+        default: ""
+        type: string
+      artifact-name:
+        description: Name of the uploaded artifact.
+        required: false
+        default: dist
+        type: string
+      retention-days:
+        description: How long to keep the uploaded artifact.
+        required: false
+        default: 3
+        type: number
+    outputs:
+      artifact-name:
+        description: Name of the artifact produced by the build job.
+        value: ${{ jobs.build.outputs.artifact-name }}
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      artifact-name: ${{ steps.echo.outputs.name }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Build Astro
+        uses: ./.github/actions/build-astro
+        with:
+          node-version: ${{ inputs.node-version }}
+          artifact-name: ${{ inputs.artifact-name }}
+          retention-days: ${{ inputs.retention-days }}
+
+      - name: Echo artifact name
+        id: echo
+        env:
+          ARTIFACT_NAME: ${{ inputs.artifact-name }}
+        run: |
+          set -euo pipefail
+          echo "name=$ARTIFACT_NAME" >> "$GITHUB_OUTPUT"
