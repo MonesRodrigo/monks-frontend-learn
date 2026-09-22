@@ -13,6 +13,8 @@ const PAGES = [
 	'/monks-frontend-learn/guides/testing/',
 	'/monks-frontend-learn/guides/github-actions-cicd/',
 	'/monks-frontend-learn/guides/github-actions-aws-oidc/',
+	'/monks-frontend-learn/guides/accessibility-pr-checklist/',
+	'/monks-frontend-learn/guides/performance-budget-playbook/',
 	'/monks-frontend-learn/reference/example/',
 ]
 

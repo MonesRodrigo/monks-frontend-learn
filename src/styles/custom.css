@@ -131,3 +131,7 @@ header.header {
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
+
+.sl-markdown-content .task-marker {
+  margin-inline-end: 0.4em;
+}
