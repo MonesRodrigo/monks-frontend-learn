@@ -123,3 +123,11 @@ header.header {
 .hero .tagline {
   max-width: 40ch;
 }
+
+/* Code blocks must wrap: an overflowing block becomes a scrollable region that
+   keyboard users cannot reach (axe `scrollable-region-focusable`). `anywhere`
+   also breaks unbreakable tokens such as ARNs and long URLs. */
+.expressive-code .ec-line .code {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
