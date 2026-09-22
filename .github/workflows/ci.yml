@@ -15,7 +15,8 @@ permissions:
   contents: read
 
 jobs:
-  build:
+  check:
+    name: Check
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -26,12 +27,8 @@ jobs:
       - name: Content & type check
         run: pnpm check
 
-      - name: Build
-        run: pnpm build
-
-      - name: Upload build output
-        uses: actions/upload-artifact@v7
-        with:
-          name: dist
-          path: dist/
-          retention-days: 3
+  # Shared build: compiles the site once and uploads `dist` as an artifact.
+  # The job name is what branch protection sees, as `Build / build`.
+  build:
+    name: Build
+    uses: ./.github/workflows/_build.yml

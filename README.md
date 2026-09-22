@@ -41,25 +41,47 @@ pnpm lh                       # Lighthouse CI (via pnpm dlx @lhci/cli)
 Feature branches target `develop`; `main` only accepts PRs from `develop` or
 `hotfix/*` and is what gets deployed.
 
-| Workflow | Trigger | What it does |
-| :-- | :-- | :-- |
-| `ci.yml` | PR + push to `main`/`develop` | `astro check` + build, uploads `dist` artifact. |
-| `deploy.yml` | push to `main` + manual | Builds and deploys to GitHub Pages. |
-| `quality.yml` | PR (code paths) | Lighthouse (3 runs), axe/a11y (SARIF), bundle size. |
-| `ai-review.yml` | PR | LLM review via GitHub Models, posts inline comments. |
-| `branch-policy.yml` | PR into `main` | Rejects PRs whose source is not `develop` or `hotfix/*`. |
+| Workflow            | Trigger                       | What it does                                                                                                |
+| :------------------ | :---------------------------- | :---------------------------------------------------------------------------------------------------------- |
+| `_build.yml`        | called by other workflows     | Reusable build: installs, runs `astro build`, uploads `dist` as an artifact.                                |
+| `ci.yml`            | PR + push to `main`/`develop` | `astro check` + calls `_build.yml`.                                                                         |
+| `deploy.yml`        | push to `main` + manual       | Calls `_build.yml`, then publishes that artifact to GitHub Pages.                                           |
+| `quality.yml`       | PR (code paths)               | Calls `_build.yml` once, then Lighthouse (3 runs), axe/a11y (SARIF) and bundle size all reuse the artifact. |
+| `ai-review.yml`     | PR                            | LLM review via GitHub Models, posts inline comments.                                                        |
+| `branch-policy.yml` | PR into `main`                | Rejects PRs whose source is not `develop` or `hotfix/*`.                                                    |
 
-The shared `checkout + pnpm + Node 22 + install` steps live in the composite
-action `.github/actions/setup`.
+### Shared build artifact
+
+The site is built **once per workflow run** and shared through an artifact, so
+no job rebuilds what another job already produced:
+
+```text
+.github/actions/setup        pnpm + Node (.nvmrc) + cached `pnpm install --frozen-lockfile`
+.github/actions/build-astro  setup -> `pnpm build` -> upload `dist/` artifact
+.github/workflows/_build.yml reusable workflow wrapping build-astro; outputs `artifact-name`
+```
+
+Consumers (`deploy`, `lighthouse`, `a11y`, `bundle`) declare
+`needs: build` and download it with
+`actions/download-artifact` using `${{ needs.build.outputs.artifact-name }}`
+into `dist/`, which is what `pnpm preview` and `pnpm size` expect.
+
+Jobs that only need dependencies (content check, AI review) use
+`.github/actions/setup` directly. `_build.yml` accepts optional
+`node-version` (defaults to `.nvmrc`), `artifact-name` and `retention-days`
+inputs — `deploy.yml` uses `dist-pages` to keep the Pages artifact separate.
 
 ## Architecture decisions
 
 - **Zero budget.** LLM inference uses **GitHub Models** with the built-in
   `GITHUB_TOKEN` (`permissions: models: read`) — no external API keys.
+- **Build once, reuse everywhere.** Quality gates and the Pages deploy consume
+  the artifact from `_build.yml` instead of rebuilding, which cuts runner
+  minutes and guarantees every gate inspects the exact same `dist/`.
 - **Least-privilege permissions** and `concurrency` on every workflow;
-  `cancel-in-progress: false` only for the Pages deploy.
+  `cancel-in-progress: false` only for the Pages deploy. `pages: write` and
+  `id-token: write` are scoped to the deploy job alone.
 - **AI review is advisory**: it never blocks a legitimate PR (warns and exits 0
   on rate limit / 5xx / timeout) and is skippable with the `skip-ai` label.
 - **Fork limitation:** `GITHUB_TOKEN` on PRs from forks is read-only and lacks
   `models: read`, so `ai-review.yml` only runs for same-repo branches.
-
