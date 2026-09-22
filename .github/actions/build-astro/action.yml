@@ -1,0 +1,36 @@
+name: Build Astro
+description: Install dependencies, build the Astro static site and upload `dist/` as a shared artifact.
+
+inputs:
+  node-version:
+    description: Overrides the Node.js version from `.nvmrc` when set.
+    required: false
+    default: ""
+  artifact-name:
+    description: Name to give the uploaded build artifact.
+    required: false
+    default: dist
+  retention-days:
+    description: How long to keep the uploaded artifact.
+    required: false
+    default: "3"
+
+runs:
+  using: composite
+  steps:
+    - name: Setup Node and pnpm
+      uses: ./.github/actions/setup
+      with:
+        node-version: ${{ inputs.node-version }}
+
+    - name: Build
+      run: pnpm build
+      shell: bash
+
+    - name: Upload dist
+      uses: actions/upload-artifact@v7
+      with:
+        name: ${{ inputs.artifact-name }}
+        path: dist/
+        retention-days: ${{ inputs.retention-days }}
+        if-no-files-found: error

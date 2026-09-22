@@ -1,7 +1,13 @@
 name: Quality
 on:
   pull_request:
-    paths: ['src/**', 'astro.config.mjs', 'pnpm-lock.yaml']
+    paths:
+      - "src/**"
+      - "astro.config.mjs"
+      - "pnpm-lock.yaml"
+      - ".github/actions/**"
+      - ".github/workflows/_build.yml"
+      - ".github/workflows/quality.yml"
 
 concurrency:
   group: quality-${{ github.ref }}
@@ -10,15 +16,26 @@ concurrency:
 permissions:
   contents: read
   pull-requests: write
-  security-events: write        # required for SARIF upload (free on public repos)
+  security-events: write # required for SARIF upload (free on public repos)
 
 jobs:
+  # Single build shared by every quality gate below. Named so its check does not
+  # collide with the CI build in branch protection.
+  build:
+    name: Quality build
+    uses: ./.github/workflows/_build.yml
+
   lighthouse:
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/setup
-      - run: pnpm build
+      - name: Download build output
+        uses: actions/download-artifact@v7
+        with:
+          name: ${{ needs.build.outputs.artifact-name }}
+          path: dist
       - uses: treosh/lighthouse-ci-action@v12
         with:
           configPath: ./lighthouserc.json
@@ -26,12 +43,17 @@ jobs:
           temporaryPublicStorage: true
 
   a11y:
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/setup
       - run: pnpm exec playwright install --with-deps chromium
-      - run: pnpm build
+      - name: Download build output
+        uses: actions/download-artifact@v7
+        with:
+          name: ${{ needs.build.outputs.artifact-name }}
+          path: dist
       - name: Run accessibility tests
         run: pnpm exec playwright test tests/a11y.spec.ts
       - name: Upload Playwright report
@@ -48,11 +70,16 @@ jobs:
           category: a11y
 
   bundle:
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/setup
-      - run: pnpm build
+      - name: Download build output
+        uses: actions/download-artifact@v7
+        with:
+          name: ${{ needs.build.outputs.artifact-name }}
+          path: dist
       - name: Check bundle size
         run: pnpm size
         env:

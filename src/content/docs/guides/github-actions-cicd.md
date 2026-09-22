@@ -1,5 +1,5 @@
 ---
-title: 'GitHub Actions CI/CD: what we built and why'
+title: "GitHub Actions CI/CD: what we built and why"
 description: A recap of this project's automation and a short tour of the core GitHub Actions concepts behind it.
 summary: What we set up so far and the GitHub Actions CI/CD building blocks it uses.
 track: tooling
@@ -19,6 +19,9 @@ built and explains the core concepts behind it.
 - An **Astro + Starlight** static site deployed to **GitHub Pages**.
 - A **composite action** (`.github/actions/setup`) that installs pnpm, Node 22
   and dependencies once, reused by every workflow.
+- A **reusable workflow** (`_build.yml`) wrapping the `build-astro` composite
+  action, so the site is built once per run and every other job downloads the
+  resulting `dist` artifact instead of rebuilding it.
 - Four workflows: continuous integration, deployment, quality gates and an
   AI-assisted review.
 - **Dependabot** keeping npm packages and action versions up to date.
@@ -54,6 +57,11 @@ Instead of repeating the same `checkout + setup + install` steps everywhere, we
 extracted them into a composite action. Third-party actions are always pinned to
 a major version (`@v4`) rather than a moving branch.
 
+A **reusable workflow** goes one step further: `_build.yml` is a whole job other
+workflows call with `uses: ./.github/workflows/_build.yml`. It publishes the
+`dist` artifact and exposes its name as an **output**, which downstream jobs
+read through `needs.build.outputs.artifact-name`.
+
 ### Permissions and secrets
 
 Every workflow declares explicit **permissions** following least privilege. The
@@ -72,7 +80,9 @@ Grant only the permissions a job needs. Our deploy job gets `pages: write` and
   which must finish).
 - **Caching** the pnpm store makes installs fast.
 - **Artifacts** carry build output and debug reports (like Playwright traces)
-  between jobs or out of the run.
+  between jobs or out of the run. Our build runs once and every consumer job
+  downloads the same `dist` artifact — fewer minutes spent, and all gates
+  inspect identical output.
 
 ### Environments and deployment
 
@@ -82,15 +92,15 @@ triggered only on `push` to `main`.
 
 ## How it maps to our workflows
 
-| Workflow | Trigger | Purpose |
-| :-- | :-- | :-- |
-| CI | PR + push to `main` | Type-check and build the site |
-| Deploy | push to `main` | Publish to GitHub Pages |
-| Quality | PR | Lighthouse, accessibility and bundle-size checks |
-| AI Review | PR | LLM review via GitHub Models |
+| Workflow         | Trigger                   | Purpose                                                                 |
+| :--------------- | :------------------------ | :---------------------------------------------------------------------- |
+| Build (reusable) | called by other workflows | Build the site and upload the `dist` artifact                           |
+| CI               | PR + push to `main`       | Type-check, then build via the reusable workflow                        |
+| Deploy           | push to `main`            | Publish the built artifact to GitHub Pages                              |
+| Quality          | PR                        | Lighthouse, accessibility and bundle-size checks on the shared artifact |
+| AI Review        | PR                        | LLM review via GitHub Models                                            |
 
 ## What's next
 
-This is the starting point. From here we can add reusable workflows, a build
-matrix, richer quality gates, and iterate on the site's UI — one small pull
-request at a time.
+This is the starting point. From here we can add a build matrix, richer quality
+gates, and iterate on the site's UI — one small pull request at a time.
