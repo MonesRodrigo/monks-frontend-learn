@@ -18,6 +18,7 @@ export default defineConfig({
 						{ label: 'Example Guide', slug: 'guides/example' },
 						{ label: 'QA & Testing', slug: 'guides/testing' },
 						{ label: 'GitHub Actions CI/CD', slug: 'guides/github-actions-cicd' },
+						{ label: 'AWS OIDC from Actions', slug: 'guides/github-actions-aws-oidc' },
 					],
 				},
 				{
