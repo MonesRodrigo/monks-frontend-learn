@@ -93,7 +93,7 @@ mouse away.
 
 axe and similar tools verify machine-checkable rules: a missing `alt`, a
 contrast ratio, a broken ARIA reference. They cannot judge whether your `alt`
-text is *useful*, whether the heading structure tells a coherent story, whether
+text is _useful_, whether the heading structure tells a coherent story, whether
 the tab order makes sense, or whether an error message helps anybody.
 
 That is the reason this list exists, and the reason a green pipeline is a floor

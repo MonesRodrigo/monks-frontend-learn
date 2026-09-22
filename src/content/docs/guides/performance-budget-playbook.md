@@ -23,11 +23,11 @@ teams skip: deciding in advance what happens when somebody breaks it.
 Budgets fail when they measure something nobody can act on. Three categories,
 in increasing order of usefulness:
 
-| Category | Example | Good for |
-| :-- | :-- | :-- |
-| Quantity | Number of requests, total bytes | Catching accidental bloat |
-| Timing | LCP, INP, CLS | Reflecting real user experience |
-| Score | Lighthouse category score | Communicating upwards |
+| Category | Example                         | Good for                        |
+| :------- | :------------------------------ | :------------------------------ |
+| Quantity | Number of requests, total bytes | Catching accidental bloat       |
+| Timing   | LCP, INP, CLS                   | Reflecting real user experience |
+| Score    | Lighthouse category score       | Communicating upwards           |
 
 Start with **quantity** — it is deterministic, fast to measure and never flaky.
 Add **timing** once the quantity budget is stable. Treat scores as reporting,
@@ -37,9 +37,9 @@ This project measures gzipped JS+CSS as the hard gate and treats Lighthouse
 metrics as warnings:
 
 ```js
-const BUDGET_KB = Number(process.env.BUNDLE_BUDGET_KB ?? 250)
-const assetsGz = totals['.js'] + totals['.css']
-const overBudget = assetsGz > BUDGET_KB * 1024
+const BUDGET_KB = Number(process.env.BUNDLE_BUDGET_KB ?? 250);
+const assetsGz = totals[".js"] + totals[".css"];
+const overBudget = assetsGz > BUDGET_KB * 1024;
 ```
 
 Note what is deliberately excluded: HTML grows with every content page, so
@@ -126,7 +126,7 @@ upgrade, an unoptimised asset, or a component that stopped being lazy-loaded.
    and what the new number is.
 
 :::caution
-Raising the budget is a legitimate decision. Raising it *silently*, in the same
+Raising the budget is a legitimate decision. Raising it _silently_, in the same
 commit that broke it, is how budgets die. If the number moves, the reason lives
 in the diff.
 :::
@@ -144,8 +144,8 @@ in the diff.
 
 ## The part that actually matters
 
-Budgets do not make applications fast. They make *slowdowns visible while
-somebody still remembers why the code was added*. A regression caught in review
+Budgets do not make applications fast. They make _slowdowns visible while
+somebody still remembers why the code was added_. A regression caught in review
 costs a conversation. The same regression found six months later costs an
 investigation, a refactor and a negotiation about priorities.
 
