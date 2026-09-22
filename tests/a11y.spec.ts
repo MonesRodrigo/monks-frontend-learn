@@ -1,22 +1,27 @@
 import { test, expect } from '@playwright/test'
 import AxeBuilder from '@axe-core/playwright'
-import { writeFileSync } from 'node:fs'
+import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 
 // Derive axe types from AxeBuilder so we don't depend on axe-core directly.
 type AxeResults = Awaited<ReturnType<InstanceType<typeof AxeBuilder>['analyze']>>
 type Violation = AxeResults['violations'][number]
 
-// Real routes served under the project base path.
-const PAGES = [
-	'/monks-frontend-learn/',
-	'/monks-frontend-learn/guides/example/',
-	'/monks-frontend-learn/guides/testing/',
-	'/monks-frontend-learn/guides/github-actions-cicd/',
-	'/monks-frontend-learn/guides/github-actions-aws-oidc/',
-	'/monks-frontend-learn/guides/accessibility-pr-checklist/',
-	'/monks-frontend-learn/guides/performance-budget-playbook/',
-	'/monks-frontend-learn/reference/example/',
-]
+// Routes come from the build output, so a new page is covered the moment it
+// ships. A hand-kept list silently skips whatever you forget to add to it.
+const SITEMAP = 'dist/sitemap-0.xml'
+
+function discoverPages(): string[] {
+	if (!existsSync(SITEMAP)) {
+		throw new Error(`${SITEMAP} not found. Run \`pnpm build\` before the accessibility suite.`)
+	}
+	const paths = [...readFileSync(SITEMAP, 'utf8').matchAll(/<loc>([^<]+)<\/loc>/g)].map(
+		(match) => new URL(match[1]).pathname,
+	)
+	if (paths.length === 0) throw new Error(`No <loc> entries found in ${SITEMAP}.`)
+	return [...new Set(paths)].sort()
+}
+
+const PAGES = discoverPages()
 
 type PageViolations = { path: string; violations: Violation[] }
 const collected: PageViolations[] = []
