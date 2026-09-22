@@ -1,5 +1,5 @@
 ---
-title: 'AWS from GitHub Actions: kill the static keys'
+title: "AWS from GitHub Actions: kill the static keys"
 description: How to replace long-lived AWS access keys in GitHub Actions with short-lived credentials obtained through OpenID Connect, with a trust policy you can actually defend.
 summary: Use GitHub's OIDC provider to assume an IAM role instead of storing AWS access keys as repository secrets.
 track: tooling
@@ -18,7 +18,7 @@ that pattern with short-lived credentials issued through **OpenID Connect**.
 
 ## Why static keys are the weak link
 
-An IAM user access key has no expiry. Whoever holds it *is* that IAM user until
+An IAM user access key has no expiry. Whoever holds it _is_ that IAM user until
 somebody manually rotates the key. That means:
 
 - It survives leaks. Printed in a log, pasted in a ticket, copied into a fork —
@@ -46,8 +46,8 @@ AWS can be told to trust that provider. The flow is:
 4. If the claims match, STS returns temporary credentials — by default valid for
    one hour.
 
-The interesting part is step 3. The trust policy is where you decide *which*
-repository, on *which* branch, is allowed to become this role.
+The interesting part is step 3. The trust policy is where you decide _which_
+repository, on _which_ branch, is allowed to become this role.
 
 :::note
 The IAM role is the permission boundary; the trust policy is the authentication
@@ -106,14 +106,14 @@ Two conditions, both mandatory:
 
 - **`aud`** pins the audience. Without it, a token minted for a different
   service could be replayed against your role.
-- **`sub`** pins the source. The format encodes the repository *and* the
+- **`sub`** pins the source. The format encodes the repository _and_ the
   context that produced the token:
 
-| `sub` value | Matches |
-| :-- | :-- |
-| `repo:my-org/my-site:ref:refs/heads/main` | Pushes to `main` |
+| `sub` value                                  | Matches                                 |
+| :------------------------------------------- | :-------------------------------------- |
+| `repo:my-org/my-site:ref:refs/heads/main`    | Pushes to `main`                        |
 | `repo:my-org/my-site:environment:production` | Jobs using the `production` environment |
-| `repo:my-org/my-site:pull_request` | Pull request runs |
+| `repo:my-org/my-site:pull_request`           | Pull request runs                       |
 
 :::caution
 Never write `"repo:my-org/*"` — or worse, drop the `sub` condition entirely and
@@ -176,7 +176,7 @@ Guides written around 2024 age badly in three specific places:
 1. **`actions/checkout@v4` and `configure-aws-credentials@v4`.** Both are
    several majors behind. Pin to a current major and let Dependabot move it.
 2. **`aws s3 sync --acl public-read`.** New buckets have S3 Block Public Access
-   enabled and ACLs disabled (object ownership is *bucket owner enforced*), so
+   enabled and ACLs disabled (object ownership is _bucket owner enforced_), so
    that flag now fails outright. Serve the bucket through CloudFront with an
    Origin Access Control instead of making objects public.
 3. **Trust policies scoped only by repository.** Add the branch or environment
