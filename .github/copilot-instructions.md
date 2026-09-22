@@ -69,9 +69,9 @@ On Node 22, a change is only "done" when all of these pass locally:
 
 ## Testing rules
 
-- Adding or changing a page under `src/content/docs/**`: add its URL (with the
-  `/monks-frontend-learn/` base) to `PAGES` in `tests/a11y.spec.ts` and keep the
-  suite green (no `critical`/`serious` axe violations).
+- `tests/a11y.spec.ts` discovers routes from `dist/sitemap-0.xml`, so every new
+  page is covered automatically — but the suite needs a fresh `pnpm build`
+  first. Never reintroduce a hand-maintained page list.
 - Fix accessibility problems in the markup. Never weaken the axe tags or the
   critical/serious threshold, or exclude a page, just to make tests pass.
 - Keep JS+CSS within the bundle budget; justify any budget bump explicitly.

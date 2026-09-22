@@ -15,9 +15,16 @@ doubles as a **testbed for an AI-powered GitHub Actions suite**.
 - Content authored as MD/MDX under `src/content/docs/`, validated by a **Zod**
   schema in `src/content.config.ts` (Astro Content Layer).
 
-> This is a GitHub Pages **project page**, so `astro.config.mjs` sets both
-> `site` and `base: '/monks-frontend-learn'`. All internal links must respect
-> that base path.
+> This is a GitHub Pages **project page**, so the site is served under a base
+> path. Both values live in one place in `astro.config.mjs` and can be
+> overridden per environment:
+>
+> ```bash
+> SITE_URL=https://example.com SITE_BASE=/other-path pnpm build
+> ```
+>
+> Never hardcode the base path in content. Use relative links
+> (`./guides/testing/`) so pages keep working wherever the site is deployed.
 
 ## Local development
 
