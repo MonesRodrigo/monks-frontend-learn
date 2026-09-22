@@ -132,6 +132,18 @@ header.header {
   overflow-wrap: anywhere;
 }
 
-.sl-markdown-content .task-marker {
-  margin-inline-end: 0.4em;
+.sl-markdown-content .task-list-item > input[type='checkbox'] {
+  display: none;
+}
+
+/* Markdown task lists render a disabled checkbox with no accessible name, which
+   axe reports as a critical `label` violation. The control above is hidden from
+   everyone, so the list marker carries the checklist affordance instead. */
+.sl-markdown-content .contains-task-list {
+  list-style-type: '\2610\00a0';
+  padding-inline-start: 1.5em;
+}
+
+.sl-markdown-content .task-list-item::marker {
+  font-size: 1.1em;
 }
