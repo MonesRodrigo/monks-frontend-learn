@@ -1,0 +1,54 @@
+name: Content Proposal
+description: Propose a new guide, playbook, checklist, or reference article.
+title: 'docs: '
+labels: ['documentation']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Propose a new piece of educational content for the platform.
+  - type: input
+    id: title
+    attributes:
+      label: Proposed Title
+      description: Working title for the content piece.
+      placeholder: 'e.g. Core Web Vitals: Debugging INP in Practice'
+    validations:
+      required: true
+  - type: dropdown
+    id: track
+    attributes:
+      label: Track
+      description: Category according to the content schema.
+      options:
+        - best-practices
+        - ai-dev
+        - performance
+        - a11y
+        - onboarding
+        - tooling
+    validations:
+      required: true
+  - type: dropdown
+    id: format
+    attributes:
+      label: Format
+      description: Format according to the content schema.
+      options:
+        - article
+        - checklist
+        - playbook
+        - snippet
+        - adr
+        - workshop
+        - video
+    validations:
+      required: true
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary & Key Takeaways
+      description: What will the reader learn, and why is it important?
+      placeholder: Brief overview of topics covered and practical takeaways...
+    validations:
+      required: true
