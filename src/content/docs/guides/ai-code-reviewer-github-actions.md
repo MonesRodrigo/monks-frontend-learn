@@ -1,5 +1,5 @@
 ---
-title: 'Zero-budget AI code review with GitHub Models & Actions'
+title: "Zero-budget AI code review with GitHub Models & Actions"
 description: How to build a custom, secure LLM code reviewer in GitHub Actions using GitHub Models, bounded diffs, schema validation, and least privilege.
 summary: Build an automated AI code review workflow with GitHub Models and Actions without third-party API keys or budget.
 track: ai-dev
@@ -66,10 +66,10 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
     paths:
-      - 'src/**'
-      - '.github/**'
-      - '!**/*.png'
-      - '!**/*.svg'
+      - "src/**"
+      - ".github/**"
+      - "!**/*.png"
+      - "!**/*.svg"
 
 permissions:
   contents: read
@@ -99,6 +99,7 @@ git diff --unified=3 \
 ```
 
 This ensures:
+
 - Lockfiles and large fixtures are omitted.
 - The diff size is hard-capped at 120 KB.
 - Branch-controlled variables pass through `env:` to avoid shell script
@@ -114,34 +115,34 @@ To solve this, parse the diff to extract the exact set of valid new line numbers
 
 ```js
 function parseDiff(patch) {
-  const reviewable = new Set()
-  let path = null
-  let newLine
+  const reviewable = new Set();
+  let path = null;
+  let newLine;
 
-  for (const line of patch.split('\n')) {
-    if (line.startsWith('+++ b/')) {
-      path = line.slice(6)
-      newLine = undefined
-      continue
+  for (const line of patch.split("\n")) {
+    if (line.startsWith("+++ b/")) {
+      path = line.slice(6);
+      newLine = undefined;
+      continue;
     }
 
-    const hunk = line.match(/^@@ -\d+(?:,\d+)? \+(\d+)/)
+    const hunk = line.match(/^@@ -\d+(?:,\d+)? \+(\d+)/);
     if (hunk) {
-      newLine = Number(hunk[1])
-      continue
+      newLine = Number(hunk[1]);
+      continue;
     }
 
-    if (newLine === undefined) continue
+    if (newLine === undefined) continue;
 
-    if (line.startsWith('+') && !line.startsWith('+++')) {
-      reviewable.add(`${path}:${newLine}`)
-      newLine++
-    } else if (!line.startsWith('-')) {
-      newLine++
+    if (line.startsWith("+") && !line.startsWith("+++")) {
+      reviewable.add(`${path}:${newLine}`);
+      newLine++;
+    } else if (!line.startsWith("-")) {
+      newLine++;
     }
   }
 
-  return reviewable
+  return reviewable;
 }
 ```
 
@@ -171,7 +172,7 @@ ${sanitizedDiff}
 </UNTRUSTED_DIFF>
 
 Return your findings strictly in JSON format matching the expected schema.
-`
+`;
 ```
 
 ## Step 5 — Structured output and sticky summaries
@@ -189,6 +190,7 @@ on every push:
 ## Results in practice
 
 By combining bounded diffs, line verification, and GitHub Models:
+
 - The review runs in ~15–25 seconds per PR.
 - Total monthly infrastructure cost: **$0.00**.
 - Zero external secrets to rotate or manage.

@@ -22,10 +22,10 @@ code, and execute reliable releases.
 
 We use a modified Gitflow model centered on two perpetual branches:
 
-| Branch | Purpose | Protection Level | Allowed PR Sources |
-| :-- | :-- | :-- | :-- |
-| `develop` | Default integration branch for active development | High (PR required, CI required) | `feat/*`, `fix/*`, `chore/*`, `docs/*` |
-| `main` | Production / deployed release branch | Maximum (Linear history, CI + policy checks) | `develop`, `hotfix/*` |
+| Branch    | Purpose                                           | Protection Level                             | Allowed PR Sources                     |
+| :-------- | :------------------------------------------------ | :------------------------------------------- | :------------------------------------- |
+| `develop` | Default integration branch for active development | High (PR required, CI required)              | `feat/*`, `fix/*`, `chore/*`, `docs/*` |
+| `main`    | Production / deployed release branch              | Maximum (Linear history, CI + policy checks) | `develop`, `hotfix/*`                  |
 
 All day-to-day work happens on short-lived feature branches cut from and targeted
 back to `develop`.
@@ -84,6 +84,7 @@ merging.
 :::
 
 **Best practice rule:**
+
 - Only mark jobs that run on **every single PR** (e.g., `Check` and `Build / build`)
   as Required Status Checks.
 - Keep path-filtered quality gates (e.g. Lighthouse, deep a11y) and AI reviews

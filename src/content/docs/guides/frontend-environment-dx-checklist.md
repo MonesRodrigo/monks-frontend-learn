@@ -55,8 +55,10 @@ a fresh machine or repository for daily development.
 
 :::tip[Pre-PR routine]
 Before opening a pull request, run the verification chain in a single command:
+
 ```bash
 pnpm check && pnpm build && pnpm size && pnpm test:a11y
 ```
+
 If this passes locally, CI will be green on the first push.
 :::
