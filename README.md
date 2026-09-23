@@ -56,6 +56,7 @@ Feature branches target `develop`; `main` only accepts PRs from `develop` or
 | `quality.yml`       | PR (code paths)               | Calls `_build.yml` once, then Lighthouse (3 runs), axe/a11y (SARIF) and bundle size all reuse the artifact. |
 | `ai-review.yml`     | PR                            | LLM review via GitHub Models, posts inline comments.                                                        |
 | `branch-policy.yml` | PR into `main`                | Rejects PRs whose source is not `develop` or `hotfix/*`.                                                    |
+| `codeql.yml`        | PR + push + schedule          | CodeQL SAST scanning for JavaScript / TypeScript.                                                          |
 
 ### Shared build artifact
 

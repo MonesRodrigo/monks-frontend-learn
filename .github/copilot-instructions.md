@@ -24,7 +24,7 @@ Zero-budget: LLM inference via GitHub Models with `GITHUB_TOKEN`.
 - Always declare explicit `permissions:` (least privilege).
 - Always add `concurrency` with `cancel-in-progress: true`
   (except the Pages deploy job, where it must be `false`).
-- Pin third-party actions to a major tag (`@v4`), never `@main`.
+- Pin third-party actions to full commit SHAs with a `# vX` comment, never mutable tags or `@main`.
 - Never use `pull_request_target`.
 - Never interpolate `${{ github.event.* }}` user input inside `run:` —
   pass it through `env:` and quote it.
