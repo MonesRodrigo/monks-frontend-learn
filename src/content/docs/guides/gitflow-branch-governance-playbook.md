@@ -25,7 +25,7 @@ We use a modified Gitflow model centered on two perpetual branches:
 | Branch    | Purpose                                           | Protection Level                             | Allowed PR Sources                     |
 | :-------- | :------------------------------------------------ | :------------------------------------------- | :------------------------------------- |
 | `develop` | Default integration branch for active development | High (PR required, CI required)              | `feat/*`, `fix/*`, `chore/*`, `docs/*` |
-| `main`    | Production / deployed release branch              | Maximum (Linear history, CI + policy checks) | `develop`, `hotfix/*`                  |
+| `main`    | Production / deployed release branch              | Maximum (CI + source-branch policy checks)   | `develop`, `hotfix/*`                  |
 
 All day-to-day work happens on short-lived feature branches cut from and targeted
 back to `develop`.
@@ -95,8 +95,7 @@ merging.
 Instead of manually clicking through the GitHub web UI on every new repository,
 define branch protection rules as JSON definitions in source control:
 
-```json
-// .github/rulesets/develop.json
+```json title=".github/rulesets/develop.json"
 {
   "name": "develop protection",
   "target": "branch",
@@ -128,11 +127,17 @@ define branch protection rules as JSON definitions in source control:
 }
 ```
 
-Apply or update these rulesets across repositories using the GitHub CLI:
+Apply or update these rulesets across repositories with the
+[GitHub CLI](https://cli.github.com/) (`gh auth login` first):
 
 ```bash
 ./.github/rulesets/apply-rulesets.sh
 ```
+
+:::caution[Code only protects you once applied]
+A ruleset file in the repository does nothing by itself. After editing one,
+re-run the script — otherwise the UI and the code silently drift apart.
+:::
 
 ## 5. Release Workflow Execution
 
@@ -141,10 +146,14 @@ When a milestone or batch of features is ready for production:
 1. **Open Release PR:** Create a PR from `develop` targeting `main`.
 2. **Review the diff:** Ensure all included changes have passed integration.
 3. **Merge Strategy:**
-   - Use **Create a merge commit** (or standard merge) for `develop -> main` to
-     preserve the shared Git history between both branches.
-   - If using **Squash and merge**, immediately sync `develop` with `main`
-     afterwards (`git checkout develop && git pull origin main && git push`) to
-     prevent diverging commit trees.
+   - Use **Create a merge commit** for `develop -> main`. It records that both
+     branches share the same history, so the next release PR only lists new
+     commits. This requires *linear history* to be off for `main`.
+   - Squash stays the default for feature branches into `develop`.
+   - If a release was squashed by mistake, `main` and `develop` diverge and old
+     commits reappear in the next release PR. Fix it by merging `main` back into
+     `develop` through a PR (`git switch -c chore/sync-main-to-develop origin/develop`,
+     `git merge origin/main`, push, open the PR) — never by pushing to `develop`
+     directly.
 4. **Deploy Verification:** GitHub Actions deploys the built artifact to
    production upon push to `main`.
