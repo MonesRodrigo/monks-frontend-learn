@@ -11,7 +11,7 @@ echo "Applying rulesets to repository: $REPO"
 
 for file in "$SCRIPT_DIR"/*.json; do
   [ -f "$file" ] || continue
-  name=$(node -e "console.log(require('$file').name)")
+  name=$(node -p 'JSON.parse(require("fs").readFileSync(process.argv[1], "utf8")).name' "$file")
   echo "Processing ruleset: '$name' from $(basename "$file")..."
 
   # Check if ruleset already exists

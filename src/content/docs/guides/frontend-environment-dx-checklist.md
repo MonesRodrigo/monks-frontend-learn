@@ -1,7 +1,7 @@
 ---
 title: Frontend environment & DX onboarding checklist
 description: A practical checklist for configuring a reproducible, secure, and fast frontend engineering environment from day one.
-summary: Set up a local development environment with Node 22, pnpm, SSH profiles, pre-commit guards, and verification tooling.
+summary: Set up a local development environment with Node 22, pnpm, SSH profiles, editor settings and local quality gates.
 track: onboarding
 level: intro
 format: checklist
@@ -28,12 +28,12 @@ a fresh machine or repository for daily development.
 - [ ] Git author details configured locally (`git config user.name` and `git config user.email`).
 - [ ] Dedicated SSH key generated and registered with your GitHub account.
 - [ ] Multi-account SSH config set up in `~/.ssh/config` using `IdentitiesOnly yes` if using personal and work profiles.
-- [ ] Default branch set to `develop` for active development.
+- [ ] New branches are cut from `develop`, never from `main`.
 - [ ] Commit messages follow Conventional Commits (`feat:`, `fix:`, `docs:`, `chore:`).
 
 ## 3. Editor & Workspace (VS Code / Cursor)
 
-- [ ] Workspace recommendations installed (Astro, TypeScript, ESLint, Playwright).
+- [ ] Extensions recommended in `.vscode/extensions.json` installed.
 - [ ] Editor formatting configured to respect `.editorconfig` (LF line endings, 2 spaces, UTF-8).
 - [ ] Format-on-save verified to not corrupt YAML or Markdown structures.
 - [ ] GitHub Copilot / LLM assistant configured with workspace context (`.github/copilot-instructions.md` / `AGENTS.md`).
@@ -48,7 +48,7 @@ a fresh machine or repository for daily development.
 
 ## 5. Security & Push Protection
 
-- [ ] Git hooks active and running verification scripts prior to push.
+- [ ] Pushes never use `--no-verify` or `--force` on shared branches.
 - [ ] Secret scanning and Push Protection enabled on the repository.
 - [ ] No secrets or `.env` files committed to Git.
 - [ ] Third-party GitHub Actions pinned by commit SHA in `.github/workflows/`.
