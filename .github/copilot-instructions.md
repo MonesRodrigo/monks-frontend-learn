@@ -25,6 +25,8 @@ Zero-budget: LLM inference via GitHub Models with `GITHUB_TOKEN`.
 - Always add `concurrency` with `cancel-in-progress: true`
   (except the Pages deploy job, where it must be `false`).
 - Pin third-party actions to full commit SHAs with a `# vX` comment, never mutable tags or `@main`.
+  Resolve the peeled commit (`git ls-remote <repo> 'refs/tags/vX^{}'`); annotated
+  tags otherwise return the tag object SHA, not the commit.
 - Never use `pull_request_target`.
 - Never interpolate `${{ github.event.* }}` user input inside `run:` —
   pass it through `env:` and quote it.
