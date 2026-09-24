@@ -17,7 +17,8 @@ concurrency:
 jobs:
   # Reuses the shared build so Pages ships the exact same artifact CI produces.
   build:
-    uses: ./.github/workflows/_build.yml
+    name: Build
+    uses: MonesRodrigo/gha-ai-suite/.github/workflows/build.yml@7d09fbe5601e5445577186e7cda86b6bc0f5734e # v1.0.0
     with:
       artifact-name: dist-pages
       retention-days: 1
@@ -33,7 +34,7 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Download build output
-        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: ${{ needs.build.outputs.artifact-name }}
           path: dist

@@ -5,7 +5,10 @@
 Astro 7 + Starlight educational site for frontend content. Doubles as a
 testbed for an AI-powered GitHub Actions suite. Public repo, personal account.
 Deployed to GitHub Pages (project page — `base` path is required).
-Zero-budget: LLM inference via GitHub Models with `GITHUB_TOKEN`.
+Zero-budget. CI comes from the reusable workflows in
+[`MonesRodrigo/gha-ai-suite`](https://github.com/MonesRodrigo/gha-ai-suite).
+The AI review is paused until the suite ships it (v1.1): GitHub Models, its
+previous provider, was retired on 2026-07-30.
 
 ## Language rules
 
@@ -32,15 +35,18 @@ Zero-budget: LLM inference via GitHub Models with `GITHUB_TOKEN`.
   pass it through `env:` and quote it.
 - Use `set -euo pipefail` in multi-line shell steps.
 - Prefer `runs-on: ubuntu-latest`.
-- Extract repeated checkout+setup+install into `.github/actions/setup`
-  (composite steps need explicit `shell: bash`).
-- Build the site once per run: call the reusable `_build.yml` (which wraps
-  `.github/actions/build-astro`) and have downstream jobs `needs:` it and
-  download the artifact with `${{ needs.build.outputs.artifact-name }}` into
-  `dist/`. Never add another `pnpm build` step to a job that can reuse it.
+- Reuse `gha-ai-suite` instead of writing local build/setup steps: its
+  `build.yml` and `quality.yml` reusable workflows and its `actions/setup`
+  action. Pin them to the release **commit** SHA with a `# vX.Y.Z` comment.
+- Build the site once per run: call the suite's `build.yml` and have
+  downstream jobs `needs:` it and consume `${{ needs.build.outputs.artifact-name }}`.
+  Never add another `pnpm build` step to a job that can reuse it.
+- Keep the CI job named `Build`: branch protection requires `Build / build`.
 
-## AI review rules
+## AI review rules (for when it returns in gha-ai-suite v1.1)
 
+- Advisory is not silent: only 429/5xx/timeouts may warn and exit 0. Any other
+  error (auth, bad endpoint, unexpected response) must fail the check.
 - Filter every finding against the set of added diff lines before posting,
   otherwise the reviews API returns 422.
 - Hard cap of 8 findings per PR.
@@ -87,15 +93,14 @@ On Node 22, a change is only "done" when all of these pass locally:
   `feat/…`, `fix/…`, `chore/…`, `ci/…`, `docs/…`.
 - Use Conventional Commits (`feat:`, `fix:`, `ci:`, `docs:`, `chore:`).
 - Keep PRs small and focused on one concern; fill in the PR template.
-- Open a PR and let CI, the quality gates and the AI review run. Do not merge
+- Open a PR and let CI and the quality gates run. Do not merge
   with red checks.
 
 ## Never do
 
-- Invent action inputs, API endpoints or GitHub Models limits.
+- Invent action inputs, API endpoints or model provider limits.
   Flag uncertainty as `⚠️ VERIFICAR EN DOCS` instead.
 - Bypass safety checks: no `--no-verify`, no `git push --force`, no
   `git reset --hard` on shared history, no direct commits to `main`/`develop`.
-- Add the `skip-ai` label without a stated reason, or disable/weaken a failing
-  check to get green — fix the root cause instead.
+- Disable or weaken a failing check to get green — fix the root cause instead.
 - Edit `.github/hooks/` to get around the enforced guardrails.

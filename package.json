@@ -14,7 +14,7 @@
     "preview": "astro preview",
     "check": "astro check",
     "test:a11y": "playwright test tests/a11y.spec.ts",
-    "lh": "pnpm dlx @lhci/cli autorun",
+    "lh": "pnpm dlx @lhci/cli autorun --collect.numberOfRuns=3 --collect.startServerCommand=\"pnpm preview --port 4321\" --collect.startServerReadyPattern=http://localhost:4321 --collect.url=http://localhost:4321/monks-frontend-learn/",
     "size": "node scripts/bundle-size.mjs",
     "astro": "astro"
   },
@@ -24,10 +24,8 @@
     "sharp": "^0.35.4"
   },
   "devDependencies": {
-    "@actions/core": "^3.0.1",
     "@astrojs/check": "^0.9.10",
     "@axe-core/playwright": "^4.13.0",
-    "@octokit/rest": "^22.0.1",
     "@playwright/test": "^1.63.0",
     "pagefind": "^1.5.2",
     "typescript": "^6.0.3"
