@@ -6,24 +6,26 @@ track: tooling
 level: intro
 author: MonesRodrigo
 publishedAt: 2026-08-03
-reviewBy: 2026-11-03
+updatedAt: 2026-09-24
+reviewBy: 2026-12-24
 status: published
 ---
 
 This site is two things at once: a place to publish frontend content, and a
-sandbox to learn **GitHub Actions** for CI/CD. This first post recaps what we
+sandbox to learn **GitHub Actions** for CI/CD. This post recaps what we
 built and explains the core concepts behind it.
 
 ## What we built
 
 - An **Astro + Starlight** static site deployed to **GitHub Pages**.
-- A **composite action** (`.github/actions/setup`) that installs pnpm, Node 22
-  and dependencies once, reused by every workflow.
-- A **reusable workflow** (`_build.yml`) wrapping the `build-astro` composite
-  action, so the site is built once per run and every other job downloads the
+- A separate repository,
+  [`gha-ai-suite`](https://github.com/MonesRodrigo/gha-ai-suite), with
+  **reusable workflows** for the build and the quality gates, and a
+  **composite action** that installs pnpm, Node 22 and dependencies.
+- A build that runs once per workflow run: every other job downloads the
   resulting `dist` artifact instead of rebuilding it.
-- Four workflows: continuous integration, deployment, quality gates and an
-  AI-assisted review.
+- Three workflows here that call the suite: continuous integration,
+  deployment and quality gates.
 - **Dependabot** keeping npm packages and action versions up to date.
 
 :::note
@@ -54,20 +56,32 @@ along as an **artifact**.
 ### Actions and reuse
 
 Instead of repeating the same `checkout + setup + install` steps everywhere, we
-extracted them into a composite action. Third-party actions are always pinned to
-a major version (`@v4`) rather than a moving branch.
+extracted them into a composite action.
 
-A **reusable workflow** goes one step further: `_build.yml` is a whole job other
-workflows call with `uses: ./.github/workflows/_build.yml`. It publishes the
-`dist` artifact and exposes its name as an **output**, which downstream jobs
-read through `needs.build.outputs.artifact-name`.
+A **reusable workflow** goes one step further: it is a whole job that other
+workflows call with `uses:`. Ours live in another repository, so any project can
+adopt them:
+
+```yaml
+jobs:
+  build:
+    name: Build
+    uses: MonesRodrigo/gha-ai-suite/.github/workflows/build.yml@7d09fbe5601e5445577186e7cda86b6bc0f5734e # v1.0.0
+```
+
+The build publishes the `dist` artifact and exposes its name as an **output**,
+which downstream jobs read through `needs.build.outputs.artifact-name`.
+
+Every action and reusable workflow is pinned to a full **commit SHA**, with the
+version as a comment. A tag like `@v4` can be moved to point at different code;
+a commit SHA cannot. For annotated tags, resolve the commit the tag points to
+(`git ls-remote <repo> 'refs/tags/v1.0.0^{}'`), not the tag object itself.
 
 ### Permissions and secrets
 
 Every workflow declares explicit **permissions** following least privilege. The
-built-in `GITHUB_TOKEN` is an ephemeral token GitHub injects per run — no API
-keys are stored in the repo. That is how the AI review talks to GitHub Models
-for free.
+built-in `GITHUB_TOKEN` is an ephemeral token GitHub injects per run, so no API
+keys are stored in the repo.
 
 :::tip
 Grant only the permissions a job needs. Our deploy job gets `pages: write` and
@@ -92,13 +106,14 @@ triggered only on `push` to `main`.
 
 ## How it maps to our workflows
 
-| Workflow         | Trigger                   | Purpose                                                                 |
-| :--------------- | :------------------------ | :---------------------------------------------------------------------- |
-| Build (reusable) | called by other workflows | Build the site and upload the `dist` artifact                           |
-| CI               | PR + push to `main`       | Type-check, then build via the reusable workflow                        |
-| Deploy           | push to `main`            | Publish the built artifact to GitHub Pages                              |
-| Quality          | PR                        | Lighthouse, accessibility and bundle-size checks on the shared artifact |
-| AI Review        | PR                        | LLM review via GitHub Models                                            |
+| Workflow | Trigger             | Purpose                                                                                |
+| :------- | :------------------ | :------------------------------------------------------------------------------------- |
+| CI       | PR + push to `main` | Type-check, then build with the suite's reusable workflow                              |
+| Deploy   | push to `main`      | Build with the suite, then publish that artifact to GitHub Pages                       |
+| Quality  | PR                  | The suite's Lighthouse, accessibility and bundle-size gates on the shared artifact     |
+
+The AI review that used to run here is paused; see
+[the AI code review post-mortem](../ai-code-reviewer-github-actions/).
 
 ## What's next
 

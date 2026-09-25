@@ -1,4 +1,4 @@
-<!-- Keep this concise. The AI reviewer reads the diff, not this template. -->
+<!-- Keep this concise: reviewers read the diff first. -->
 
 ## What
 <!-- One-line summary of the change -->

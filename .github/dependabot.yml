@@ -6,7 +6,7 @@ updates:
     schedule:
       interval: weekly
     groups:
-      # Batch low-risk updates into a single PR — good AI-review test material
+      # Batch low-risk updates into a single PR
       minor-and-patch:
         update-types: [minor, patch]
 

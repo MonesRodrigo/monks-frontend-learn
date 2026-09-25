@@ -19,9 +19,11 @@ jobs:
     name: Check
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
-      - uses: ./.github/actions/setup
+      - uses: MonesRodrigo/gha-ai-suite/actions/setup@7d09fbe5601e5445577186e7cda86b6bc0f5734e # v1.0.0
 
       # Validates MDX frontmatter against the Zod schemas in src/content.config.ts
       - name: Content & type check
@@ -31,4 +33,4 @@ jobs:
   # The job name is what branch protection sees, as `Build / build`.
   build:
     name: Build
-    uses: ./.github/workflows/_build.yml
+    uses: MonesRodrigo/gha-ai-suite/.github/workflows/build.yml@7d09fbe5601e5445577186e7cda86b6bc0f5734e # v1.0.0

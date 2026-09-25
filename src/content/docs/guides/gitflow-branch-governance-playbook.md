@@ -88,7 +88,8 @@ merging.
 - Only mark jobs that run on **every single PR** (e.g., `Check` and `Build / build`)
   as Required Status Checks.
 - Keep path-filtered quality gates (e.g. Lighthouse, deep a11y) and AI reviews
-  as advisory or run them unconditionally on all PRs if they are fast enough.
+  out of the required checks, or run them unconditionally on all PRs if they
+  are fast enough.
 
 ## 4. Rulesets as Code
 
