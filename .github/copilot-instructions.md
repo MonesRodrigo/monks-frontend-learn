@@ -69,6 +69,7 @@ previous provider, was retired on 2026-07-30.
 On Node 22, a change is only "done" when all of these pass locally:
 
 - `pnpm check` — astro check (TypeScript + content frontmatter via Zod).
+- `pnpm format:check` — Prettier; run `pnpm format` to fix.
 - `pnpm build` — production build succeeds.
 - Relevant tests: `pnpm test:a11y` when pages or markup change; `pnpm size`
   must stay within `BUNDLE_BUDGET_KB`.

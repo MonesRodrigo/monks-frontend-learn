@@ -13,6 +13,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "test:a11y": "playwright test tests/a11y.spec.ts",
     "lh": "pnpm dlx @lhci/cli autorun --collect.numberOfRuns=3 --collect.startServerCommand=\"pnpm preview --port 4321\" --collect.startServerReadyPattern=http://localhost:4321 --collect.url=http://localhost:4321/monks-frontend-learn/",
     "size": "node scripts/bundle-size.mjs",
@@ -28,6 +30,7 @@
     "@axe-core/playwright": "^4.13.0",
     "@playwright/test": "^1.63.0",
     "pagefind": "^1.5.2",
+    "prettier": "3.9.9",
     "typescript": "^6.0.3"
   }
 }

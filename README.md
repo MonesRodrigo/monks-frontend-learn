@@ -35,6 +35,7 @@ pnpm install --frozen-lockfile
 
 pnpm dev                      # dev server at http://localhost:4321/monks-frontend-learn/
 pnpm check                    # astro check: TypeScript + content frontmatter (Zod)
+pnpm format                   # Prettier (CI runs `pnpm format:check`)
 pnpm build                    # production build to ./dist
 pnpm preview                  # serve the built site under the base path
 
@@ -53,13 +54,13 @@ These local checks mirror the CI gates; CI itself runs the
 Feature branches target `develop`; `main` only accepts PRs from `develop` or
 `hotfix/*` and is what gets deployed.
 
-| Workflow            | Trigger                       | What it does                                                                                           |
-| :------------------ | :---------------------------- | :----------------------------------------------------------------------------------------------------- |
-| `ci.yml`            | PR + push to `main`/`develop` | `astro check` + the suite's `build.yml` (required check `Build / build`).                              |
-| `deploy.yml`        | push to `main` + manual       | Suite `build.yml`, then publishes that artifact to GitHub Pages.                                       |
+| Workflow            | Trigger                       | What it does                                                                                                                          |
+| :------------------ | :---------------------------- | :------------------------------------------------------------------------------------------------------------------------------------ |
+| `ci.yml`            | PR + push to `main`/`develop` | `astro check` + the suite's `build.yml` (required check `Build / build`).                                                             |
+| `deploy.yml`        | push to `main` + manual       | Suite `build.yml`, then publishes that artifact to GitHub Pages.                                                                      |
 | `quality.yml`       | PR (code paths)               | Suite `build.yml` once, then suite `quality.yml`: bundle size, axe a11y and Lighthouse (3 runs). The axe SARIF goes to code scanning. |
-| `branch-policy.yml` | PR into `main`                | Rejects PRs whose source is not `develop` or `hotfix/*`.                                               |
-| `codeql.yml`        | PR + push + schedule          | CodeQL SAST scanning for JavaScript / TypeScript.                                                      |
+| `branch-policy.yml` | PR into `main`                | Rejects PRs whose source is not `develop` or `hotfix/*`.                                                                              |
+| `codeql.yml`        | PR + push + schedule          | CodeQL SAST scanning for JavaScript / TypeScript.                                                                                     |
 
 ### Shared build artifact
 
