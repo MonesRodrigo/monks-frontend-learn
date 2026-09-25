@@ -14,6 +14,9 @@ doubles as a **testbed for an AI-powered GitHub Actions suite**.
   package manager (Corepack-pinned via `packageManager`).
 - Content authored as MD/MDX under `src/content/docs/`, validated by a **Zod**
   schema in `src/content.config.ts` (Astro Content Layer).
+- The sidebar groups guides by their `track` frontmatter, `intro` level first.
+  A new track must also be added to `TRACKS` in `astro.config.mjs`; the build
+  fails otherwise.
 
 > This is a GitHub Pages **project page**, so the site is served under a base
 > path. Both values live in one place in `astro.config.mjs` and can be

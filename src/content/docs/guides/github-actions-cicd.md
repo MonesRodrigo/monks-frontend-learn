@@ -1,5 +1,7 @@
 ---
 title: 'GitHub Actions CI/CD: what we built and why'
+sidebar:
+  label: GitHub Actions CI/CD
 description: A recap of this project's automation and a short tour of the core GitHub Actions concepts behind it.
 summary: What we set up so far and the GitHub Actions CI/CD building blocks it uses.
 track: tooling
