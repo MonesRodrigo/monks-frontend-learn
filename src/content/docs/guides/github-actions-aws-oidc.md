@@ -1,5 +1,7 @@
 ---
 title: 'AWS from GitHub Actions: kill the static keys'
+sidebar:
+  label: AWS with OIDC
 description: How to replace long-lived AWS access keys in GitHub Actions with short-lived credentials obtained through OpenID Connect, with a trust policy you can actually defend.
 summary: Use GitHub's OIDC provider to assume an IAM role instead of storing AWS access keys as repository secrets.
 track: tooling

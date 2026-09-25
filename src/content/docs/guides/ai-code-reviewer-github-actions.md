@@ -1,5 +1,7 @@
 ---
 title: 'AI code review in GitHub Actions: guardrails, and the day ours went silent'
+sidebar:
+  label: AI code review post-mortem
 description: How we built a secure LLM code reviewer in GitHub Actions, why it failed silently for two months when its provider was retired, and how to classify errors so advisory never means invisible.
 summary: A secure AI reviewer for pull requests, plus a post-mortem on how "advisory" error handling hid a dead provider for two months.
 track: ai-dev

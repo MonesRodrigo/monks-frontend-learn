@@ -1,5 +1,7 @@
 ---
 title: Gitflow, branch protection and release governance playbook
+sidebar:
+  label: Gitflow & release governance
 description: How to implement clean Gitflow with develop/main, automated branch policy enforcement, rulesets as code, and predictable releases.
 summary: Manage feature branching, release workflows, automated branch policies, and rulesets as code for production stability.
 track: best-practices
