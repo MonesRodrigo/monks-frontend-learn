@@ -1,5 +1,5 @@
 ---
-title: "AI code review in GitHub Actions: guardrails, and the day ours went silent"
+title: 'AI code review in GitHub Actions: guardrails, and the day ours went silent'
 description: How we built a secure LLM code reviewer in GitHub Actions, why it failed silently for two months when its provider was retired, and how to classify errors so advisory never means invisible.
 summary: A secure AI reviewer for pull requests, plus a post-mortem on how "advisory" error handling hid a dead provider for two months.
 track: ai-dev
@@ -73,10 +73,10 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
     paths:
-      - "src/**"
-      - ".github/**"
-      - "!**/*.png"
-      - "!**/*.svg"
+      - 'src/**'
+      - '.github/**'
+      - '!**/*.png'
+      - '!**/*.svg'
 
 permissions:
   contents: read
@@ -205,7 +205,7 @@ messages: [
 ```
 
 The model can still be fooled; this raises the cost of an attack rather than
-preventing it. That is why the reviewer can only *comment* — it never approves,
+preventing it. That is why the reviewer can only _comment_ — it never approves,
 requests changes or blocks a merge.
 
 ## Step 6 — Validating output and limiting noise
@@ -247,19 +247,19 @@ Three layers of "never block the PR" stacked up:
 3. **The workflow step** had `continue-on-error: true`, so even a crash would
    have stayed green.
 
-Each layer looked reasonable on its own. Together they turned *advisory* into
-*invisible*: a moved endpoint, a revoked credential and a real outage all looked
+Each layer looked reasonable on its own. Together they turned _advisory_ into
+_invisible_: a moved endpoint, a revoked credential and a real outage all looked
 the same, and all of them looked like success.
 
 ## The fix: classify errors
 
-Advisory means the reviewer cannot block a merge by what it *says*. It does not
+Advisory means the reviewer cannot block a merge by what it _says_. It does not
 mean its own failures are hidden. Split errors into two groups:
 
-| Error                                       | Meaning                    | Behavior           |
-| :------------------------------------------ | :------------------------- | :----------------- |
-| `429`, `5xx`, timeout                       | Try again later            | Warn and exit `0`  |
-| `401`/`403`, `404`, other `4xx`, non-JSON   | Misconfigured or moved API | Fail the check     |
+| Error                                     | Meaning                    | Behavior          |
+| :---------------------------------------- | :------------------------- | :---------------- |
+| `429`, `5xx`, timeout                     | Try again later            | Warn and exit `0` |
+| `401`/`403`, `404`, other `4xx`, non-JSON | Misconfigured or moved API | Fail the check    |
 
 ```js
 // Only these mean "try again later"; anything else is a bug to surface.

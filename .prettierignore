@@ -1,0 +1,4 @@
+# .gitignore entries are ignored automatically.
+pnpm-lock.yaml
+# Guardrails are changed deliberately, never by a formatter.
+.github/hooks/

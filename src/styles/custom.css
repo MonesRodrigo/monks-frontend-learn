@@ -115,8 +115,8 @@ header.header {
   justify-content: start;
 }
 
-.hero>img,
-.hero>.hero-html {
+.hero > img,
+.hero > .hero-html {
   display: none;
 }
 

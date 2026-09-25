@@ -22,10 +22,10 @@ code, and execute reliable releases.
 
 We use a modified Gitflow model centered on two perpetual branches:
 
-| Branch    | Purpose                                           | Protection Level                             | Allowed PR Sources                     |
-| :-------- | :------------------------------------------------ | :------------------------------------------- | :------------------------------------- |
-| `develop` | Default integration branch for active development | High (PR required, CI required)              | `feat/*`, `fix/*`, `chore/*`, `docs/*` |
-| `main`    | Production / deployed release branch              | Maximum (CI + source-branch policy checks)   | `develop`, `hotfix/*`                  |
+| Branch    | Purpose                                           | Protection Level                           | Allowed PR Sources                     |
+| :-------- | :------------------------------------------------ | :----------------------------------------- | :------------------------------------- |
+| `develop` | Default integration branch for active development | High (PR required, CI required)            | `feat/*`, `fix/*`, `chore/*`, `docs/*` |
+| `main`    | Production / deployed release branch              | Maximum (CI + source-branch policy checks) | `develop`, `hotfix/*`                  |
 
 All day-to-day work happens on short-lived feature branches cut from and targeted
 back to `develop`.
@@ -118,10 +118,7 @@ define branch protection rules as JSON definitions in source control:
       "type": "required_status_checks",
       "parameters": {
         "strict_required_status_checks_policy": true,
-        "required_status_checks": [
-          { "context": "Check" },
-          { "context": "Build / build" }
-        ]
+        "required_status_checks": [{ "context": "Check" }, { "context": "Build / build" }]
       }
     }
   ]
@@ -149,7 +146,7 @@ When a milestone or batch of features is ready for production:
 3. **Merge Strategy:**
    - Use **Create a merge commit** for `develop -> main`. It records that both
      branches share the same history, so the next release PR only lists new
-     commits. This requires *linear history* to be off for `main`.
+     commits. This requires _linear history_ to be off for `main`.
    - Squash stays the default for feature branches into `develop`.
    - If a release was squashed by mistake, `main` and `develop` diverge and old
      commits reappear in the next release PR. Fix it by merging `main` back into

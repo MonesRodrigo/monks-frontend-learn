@@ -2,11 +2,11 @@ name: Quality
 on:
   pull_request:
     paths:
-      - "src/**"
-      - "astro.config.mjs"
-      - "pnpm-lock.yaml"
-      - "lighthouserc.json"
-      - ".github/workflows/quality.yml"
+      - 'src/**'
+      - 'astro.config.mjs'
+      - 'pnpm-lock.yaml'
+      - 'lighthouserc.json'
+      - '.github/workflows/quality.yml'
 
 concurrency:
   group: quality-${{ github.ref }}

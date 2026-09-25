@@ -11,14 +11,14 @@ type Violation = AxeResults['violations'][number]
 const SITEMAP = 'dist/sitemap-0.xml'
 
 function discoverPages(): string[] {
-	if (!existsSync(SITEMAP)) {
-		throw new Error(`${SITEMAP} not found. Run \`pnpm build\` before the accessibility suite.`)
-	}
-	const paths = [...readFileSync(SITEMAP, 'utf8').matchAll(/<loc>([^<]+)<\/loc>/g)].map(
-		(match) => new URL(match[1]).pathname,
-	)
-	if (paths.length === 0) throw new Error(`No <loc> entries found in ${SITEMAP}.`)
-	return [...new Set(paths)].sort()
+  if (!existsSync(SITEMAP)) {
+    throw new Error(`${SITEMAP} not found. Run \`pnpm build\` before the accessibility suite.`)
+  }
+  const paths = [...readFileSync(SITEMAP, 'utf8').matchAll(/<loc>([^<]+)<\/loc>/g)].map(
+    (match) => new URL(match[1]).pathname,
+  )
+  if (paths.length === 0) throw new Error(`No <loc> entries found in ${SITEMAP}.`)
+  return [...new Set(paths)].sort()
 }
 
 const PAGES = discoverPages()
