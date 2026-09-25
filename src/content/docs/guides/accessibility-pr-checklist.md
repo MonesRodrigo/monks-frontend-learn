@@ -1,5 +1,7 @@
 ---
 title: Accessibility checklist for pull requests
+sidebar:
+  label: PR accessibility checklist
 description: A short, practical checklist to run over any frontend pull request before approving it, covering what automated accessibility tooling cannot detect.
 summary: What to verify by hand in a PR, and which problems axe will never report for you.
 track: a11y

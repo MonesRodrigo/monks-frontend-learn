@@ -1,5 +1,7 @@
 ---
 title: 'GitHub Actions CI/CD: what we built and why'
+sidebar:
+  label: GitHub Actions CI/CD
 description: A recap of this project's automation and a short tour of the core GitHub Actions concepts behind it.
 summary: What we set up so far and the GitHub Actions CI/CD building blocks it uses.
 track: tooling
@@ -40,6 +42,9 @@ A **workflow** is a YAML file in `.github/workflows/`. It runs when an **event**
 happens and contains one or more **jobs**; each job runs on a fresh **runner**
 (a virtual machine) and is made of ordered **steps**. A step either runs a shell
 command or uses an **action** (a reusable unit of automation).
+
+For the file syntax itself, which keys are fixed and which names are yours, see
+[Anatomy of a GitHub Actions workflow](../anatomy-of-a-github-actions-workflow/).
 
 ### Events (triggers)
 

@@ -1,5 +1,7 @@
 ---
 title: Frontend environment & DX onboarding checklist
+sidebar:
+  label: Environment & DX checklist
 description: A practical checklist for configuring a reproducible, secure, and fast frontend engineering environment from day one.
 summary: Set up a local development environment with Node 22, pnpm, SSH profiles, editor settings and local quality gates.
 track: onboarding
