@@ -43,6 +43,9 @@ happens and contains one or more **jobs**; each job runs on a fresh **runner**
 (a virtual machine) and is made of ordered **steps**. A step either runs a shell
 command or uses an **action** (a reusable unit of automation).
 
+For the file syntax itself, which keys are fixed and which names are yours, see
+[Anatomy of a GitHub Actions workflow](../anatomy-of-a-github-actions-workflow/).
+
 ### Events (triggers)
 
 Workflows start on events like `push`, `pull_request`, a schedule (`cron`), or a
