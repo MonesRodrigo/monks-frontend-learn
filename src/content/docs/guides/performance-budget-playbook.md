@@ -37,9 +37,9 @@ This project measures gzipped JS+CSS as the hard gate and treats Lighthouse
 metrics as warnings:
 
 ```js
-const BUDGET_KB = Number(process.env.BUNDLE_BUDGET_KB ?? 250);
-const assetsGz = totals[".js"] + totals[".css"];
-const overBudget = assetsGz > BUDGET_KB * 1024;
+const BUDGET_KB = Number(process.env.BUNDLE_BUDGET_KB ?? 250)
+const assetsGz = totals['.js'] + totals['.css']
+const overBudget = assetsGz > BUDGET_KB * 1024
 ```
 
 Note what is deliberately excluded: HTML grows with every content page, so

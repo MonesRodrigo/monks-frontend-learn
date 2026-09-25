@@ -1,5 +1,5 @@
 ---
-title: "GitHub Actions CI/CD: what we built and why"
+title: 'GitHub Actions CI/CD: what we built and why'
 description: A recap of this project's automation and a short tour of the core GitHub Actions concepts behind it.
 summary: What we set up so far and the GitHub Actions CI/CD building blocks it uses.
 track: tooling
@@ -106,11 +106,11 @@ triggered only on `push` to `main`.
 
 ## How it maps to our workflows
 
-| Workflow | Trigger             | Purpose                                                                                |
-| :------- | :------------------ | :------------------------------------------------------------------------------------- |
-| CI       | PR + push to `main` | Type-check, then build with the suite's reusable workflow                              |
-| Deploy   | push to `main`      | Build with the suite, then publish that artifact to GitHub Pages                       |
-| Quality  | PR                  | The suite's Lighthouse, accessibility and bundle-size gates on the shared artifact     |
+| Workflow | Trigger             | Purpose                                                                            |
+| :------- | :------------------ | :--------------------------------------------------------------------------------- |
+| CI       | PR + push to `main` | Type-check, then build with the suite's reusable workflow                          |
+| Deploy   | push to `main`      | Build with the suite, then publish that artifact to GitHub Pages                   |
+| Quality  | PR                  | The suite's Lighthouse, accessibility and bundle-size gates on the shared artifact |
 
 The AI review that used to run here is paused; see
 [the AI code review post-mortem](../ai-code-reviewer-github-actions/).
