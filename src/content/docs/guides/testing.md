@@ -25,7 +25,7 @@ On Node 22, a change is only done when these pass locally:
 
 - Work on a feature branch (`feat/…`, `fix/…`, `ci/…`, `docs/…`), never on `main`.
 - Use Conventional Commits and keep pull requests small and focused.
-- Open a PR and let CI, the quality gates and the AI review run. Never merge with
+- Open a PR and let CI and the quality gates run. Never merge with
   red checks.
 
 ## Accessibility
