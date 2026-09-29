@@ -9,7 +9,8 @@ level: intermediate
 format: article
 author: MonesRodrigo
 publishedAt: 2026-09-22
-reviewBy: 2026-12-22
+updatedAt: 2026-09-29
+reviewBy: 2026-12-29
 status: published
 ---
 
@@ -96,7 +97,7 @@ worth understanding every line:
       "Condition": {
         "StringEquals": {
           "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
-          "token.actions.githubusercontent.com:sub": "repo:my-org/my-site:ref:refs/heads/main"
+          "token.actions.githubusercontent.com:sub": "repo:my-org@123456/my-site@789012:environment:production"
         }
       }
     }
@@ -111,11 +112,28 @@ Two conditions, both mandatory:
 - **`sub`** pins the source. The format encodes the repository _and_ the
   context that produced the token:
 
-| `sub` value                                  | Matches                                 |
-| :------------------------------------------- | :-------------------------------------- |
-| `repo:my-org/my-site:ref:refs/heads/main`    | Pushes to `main`                        |
-| `repo:my-org/my-site:environment:production` | Jobs using the `production` environment |
-| `repo:my-org/my-site:pull_request`           | Pull request runs                       |
+| `sub` value                                                | Matches                                 |
+| :--------------------------------------------------------- | :-------------------------------------- |
+| `repo:my-org@123456/my-site@789012:ref:refs/heads/main`    | Pushes to `main`                        |
+| `repo:my-org@123456/my-site@789012:environment:production` | Jobs using the `production` environment |
+| `repo:my-org@123456/my-site@789012:pull_request`           | Pull request runs                       |
+
+:::caution[The `sub` format changed in 2026]
+The numbers after `@` are the permanent IDs of the owner (organization or user)
+and of the repository. GitHub added them so that a deleted and re-created
+repository name cannot mint tokens your old trust policy still accepts.
+
+- Repositories **created, renamed or transferred on or after 15 July 2026** emit
+  this immutable form.
+- Older repositories keep the legacy form, `repo:my-org/my-site:…`, until an
+  admin opts in from the repository or organization OIDC settings.
+- Early posts used `-` as the separator. The final format uses `@`.
+
+Match the form your repository actually emits. A legacy-form policy on a new
+repository rejects every run. Read both IDs from the API: `owner.id` and `id` in
+`https://api.github.com/repos/<owner>/<repo>`. See the
+[changelog entry](https://github.blog/changelog/2026-04-23-immutable-subject-claims-for-github-actions-oidc-tokens/).
+:::
 
 :::caution
 Never write `"repo:my-org/*"` — or worse, drop the `sub` condition entirely and
@@ -140,16 +158,20 @@ Two changes to the job: request the token, then exchange it.
 ```yaml
 permissions:
   contents: read
-  id-token: write # required to request the OIDC token
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     environment: production
+    permissions:
+      contents: read
+      id-token: write # required to request the OIDC token
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
-      - uses: aws-actions/configure-aws-credentials@v6
+      - uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6.3.0
         with:
           aws-region: us-east-1
           role-to-assume: arn:aws:iam::123456789012:role/my-site-deploy
@@ -163,8 +185,8 @@ exports the temporary credentials for the steps that follow.
 
 A few details worth knowing:
 
-- `permissions` at workflow level applies to all jobs. Prefer declaring
-  `id-token: write` on the single job that needs it.
+- `permissions` at workflow level applies to all jobs, so keep it read-only
+  there and grant `id-token: write` on the single job that needs it.
 - `role-session-name` is what shows up in CloudTrail. Make it identify the
   pipeline, not `GitHubActions`.
 - The default session is one hour; raise it with `role-duration-seconds` only if
@@ -173,16 +195,21 @@ A few details worth knowing:
 
 ## What else the old tutorials get wrong
 
-Guides written around 2024 age badly in three specific places:
+Guides written before 2026 age badly in four specific places:
 
 1. **`actions/checkout@v4` and `configure-aws-credentials@v4`.** Both are
-   several majors behind. Pin to a current major and let Dependabot move it.
+   several majors behind, and a tag can be moved to point at different code. Pin
+   every action to a full commit SHA with the version as a comment, as above;
+   Dependabot updates SHA pins too.
 2. **`aws s3 sync --acl public-read`.** New buckets have S3 Block Public Access
    enabled and ACLs disabled (object ownership is _bucket owner enforced_), so
    that flag now fails outright. Serve the bucket through CloudFront with an
    Origin Access Control instead of making objects public.
 3. **Trust policies scoped only by repository.** Add the branch or environment
    segment of the `sub` claim, or the role is broader than it looks.
+4. **The legacy `sub` format.** Every example written before 2026 uses
+   `repo:org/repo:…`, which repositories created since 15 July 2026 no longer
+   emit.
 
 ## Debugging a rejected assumption
 
@@ -192,6 +219,8 @@ one of these:
 - `id-token: write` is missing from the job's `permissions`.
 - The `sub` in the token does not match the trust policy — a tag build produces
   `ref:refs/tags/v1`, not `ref:refs/heads/main`.
+- The policy uses the legacy `repo:org/repo:…` form, but the repository emits
+  the immutable `repo:org@ID/repo@ID:…` form, or the other way round.
 - The workflow runs from a **forked** pull request. Those runs receive a
   read-only token and cannot request an ID token at all. This is deliberate:
   treat fork builds as untrusted and never give them deploy credentials.
